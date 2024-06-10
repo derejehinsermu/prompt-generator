@@ -16,9 +16,10 @@ from langchain_community.vectorstores import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_openai import ChatOpenAI
 from retriever.retriever import create_rag_chain
+from langchain.schema import HumanMessage, AIMessage
 
 def main():
-    st.title("Document-based Question Answering")
+    st.title("Knowledge-based bot")
     
     # Define model and vector store parameters
     hf_model_name = "BAAI/bge-base-en-v1.5"
@@ -42,16 +43,40 @@ def main():
     # Create the RAG chain
     rag_chain = create_rag_chain(vectorstore, llm, embedding_model)
     
-    # Streamlit input for user query
-    question = st.text_input("Enter your question:", placeholder="enter a question?")
+    if "chat_history" not in st.session_state:
+        st.session_state.chat_history = []
+
+    #  Display the chat history
+    for message in st.session_state.chat_history:
+        if isinstance(message,HumanMessage):
+
+            with st.chat_message("human"):
+                st.markdown(message.content)
+        else:
+            with st.chat_message("AI"):
+                st.markdown(message.content)
     
-    if st.button("Get Answer"):
+
+    question = st.chat_input("Enter your question:")
+    if question:
+        if question is not None and question != "":
+            # Add the user's question to the chat history
+            st.session_state.chat_history.append(HumanMessage(content=question))
+
+            with st.chat_message("human"):
+                st.markdown(question)
+        
         # Get response from the model
         response = rag_chain(question)
-        
-        # Display the response
-        st.write("Response:")
-        st.write(response.content)
+
+        with st.chat_message("AI"):
+            st.write_stream(response)
+            # st.markdown(response.content)
+
+        # Add the AI's response to the chat history
+        st.session_state.chat_history.append(AIMessage(content=response))
+  
 
 if __name__ == "__main__":
     main()
+
