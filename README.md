@@ -1,4 +1,4 @@
-# Precision RAG: Prompt Tuning For Building Enterprise Grade RAG Systems
+  # Precision RAG: Prompt Tuning For Building Enterprise Grade RAG Systems
 
 ## Overview
 
@@ -59,7 +59,7 @@ These services are designed to optimize the performance and usability of LLM app
    
     Navigate to the root directory of the project and create a virtual environment named 'venv', then activate it:
     ```sh
-    cd prompt_generator.git
+    cd prompt-generator.git
     python -m venv venv  | virtualenv venv
     source venv/bin/activate
     ```
